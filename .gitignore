@@ -1,4 +1,4 @@
 .venv/
 __pycache__/
 *.py[cod]
-src/utils.py
+freq_bands.md
