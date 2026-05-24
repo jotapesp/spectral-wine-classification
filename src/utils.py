@@ -139,7 +139,7 @@ def compare_filters(df_mean, wine_column='Wine_01'):
     sinal_bruto = df_mean[wine_column]
     
     # Aplica os dois filtros
-    sinal_savgol = dsp_filter_savgol(sinal_bruto, janela=11, ordem=2)
+    sinal_savgol = dsp_filter(sinal_bruto, janela=11, ordem=2)
     sinal_convolucao = dsp_filter_moving_average(sinal_bruto, janela=7) # Janela 7 para visualização clara
     
     plt.figure(figsize=(12, 6))

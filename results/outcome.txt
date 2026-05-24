@@ -1,0 +1,21 @@
+--- METRICAS EXTRAIDAS COM FILTRO SAVITZKY-GOLAY (Primeiras Linhas) ---
+             pico_acucar  area_acucar  ...  pico_acidos  area_acidos
+Vinho                                  ...                          
+Wine_01_Cab     0.911270   153.857953  ...     0.452902    34.202534
+Wine_02_Cab     0.910141   154.125368  ...     0.452489    34.169836
+Wine_03_Cab     0.911273   152.460487  ...     0.451262    34.126741
+Wine_04_Cab     0.902508   151.914560  ...     0.450326    34.047677
+Wine_05_Cab     0.918459   153.171443  ...     0.445806    33.710029
+
+[5 rows x 10 columns]
+
+--- METRICAS EXTRAIDAS COM FILTRO DE MEDIA MOVEL (Primeiras Linhas) ---
+             pico_acucar  area_acucar  ...  pico_acidos  area_acidos
+Vinho                                  ...                          
+Wine_01_Cab     0.889979   153.573399  ...     0.453108    34.215008
+Wine_02_Cab     0.896349   153.840791  ...     0.452656    34.182910
+Wine_03_Cab     0.885340   152.175652  ...     0.451402    34.137989
+Wine_04_Cab     0.876938   151.630621  ...     0.450479    34.060104
+Wine_05_Cab     0.912888   152.890505  ...     0.446005    33.722053
+
+[5 rows x 10 columns]
