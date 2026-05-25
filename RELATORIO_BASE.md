@@ -203,31 +203,23 @@ Somente após esse preenchimento, a rotação dos elementos da matriz circulante
 
 ---
 
-### ABORDAGEM 2: Processamento Harmônico no Domínio da Frequência via Transformada de Fourier Discreta (DFT)
+### ABORDAGEM 2: Processamento Algorítmico no Domínio Dual (Pseudo-Tempo) via Transformada Rápida de Fourier (FFT)
 
-A segunda rota de processamento migra os dados do domínio do espaço discreto para o domínio da frequência discreta através da **Transformada de Fourier Discreta (DFT)**, cuja execução computacional otimizada utiliza o algoritmo da Transformada Rápida de Fourier (FFT).
+**Nota de Rigor Teórico sobre a Dualidade dos Domínios:**
+É fundamental ressaltar que os dados brutos de entrada ($x[n]$) provenientes do espectrômetro FTIR já se encontram fisicamente no **domínio da frequência espacial** (números de onda ou *wavenumbers*), pois a própria instrumentação aplica uma Transformada de Fourier óptica sobre o interferograma captado pelo sensor. 
 
+Portanto, ao propormos o uso da Transformada de Fourier Discreta (DFT) nesta etapa de filtragem, não estamos buscando uma transformação física. Estamos explorando a **Dualidade Domínio-Frequência** puramente como um artifício algorítmico para acelerar cálculos.
 
+Ao aplicar a DFT sobre um espectro que já está em frequência, o sinal é levado matematicamente para um domínio recíproco abstrato, conhecido na literatura avançada de PDS como **Domínio de Pseudo-Tempo** (ou *Quefrency*, pilar da análise Cepstral). A vantagem desse salto matemático é amparada pelo **Teorema da Convolução de Oppenheim**: a complexa e custosa operação de convolução (deslocar e somar matrizes no espaço discreto) colapsa em uma operação trivial de **Multiplicação Direta Elemento a Elemento** no domínio dual.
 
-#### Construção da Matriz de Fourier ($W_N$)
-A DFT converte a sequência espectral mapeando o sinal em componentes de frequências harmônicas. O círculo trigonométrico complexo é fracionado em $N$ fatias ortogonais. A Transformada é calculada pela aplicação da Matriz de Fourier $W_N$, cujos elementos internos são determinados pelas raízes complexas da unidade:
-$$W_N = e^{-j\frac{2\pi}{N}}$$
-A matriz de transformação de dimensões $N \times N$, onde as linhas representam os índices de frequência $k$ e as colunas denotam os índices de espaço discreto $n$, é estruturada como:
-$$\mathbf{W} = \begin{bmatrix} 1 & 1 & 1 & \dots & 1 \\ 1 & W_N^1 & W_N^2 & \dots & W_N^{(N-1)} \\ 1 & W_N^2 & W_N^4 & \dots & W_N^{2(N-1)} \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & W_N^{(N-1)} & W_N^{2(N-1)} & \dots & W_N^{(N-1)(N-1)} \end{bmatrix}$$
+O fluxo de processamento algorítmico rápido segue estritamente os passos:
 
-O espectro complexo do sinal do vinho na frequência é obtido pela multiplicação matricial:
-$$X[k] = \mathbf{W} \cdot x[n]$$
-
-#### O Teorema da Convolução de Oppenheim
-A grande vantagem teórica e prática dessa migração é amparada pelo Teorema da Convolução. A complexa e trabalhosa operação de convolução (que envolve espelhar, deslocar ponto a ponto e somar matrizes no espaço) colapsa em uma operação de **Multiplicação Direta Elemento a Elemento** no domínio da frequência. 
-
-O fluxo de processamento harmônico segue estritamente os seguintes passos resolutivos:
-1. **Zero-Padding Geral:** Redimensiona o sinal do vinho $x[n]$ e a resposta ao impulso do filtro $h[n]$ preenchendo-os com zeros até o tamanho linear $N_{\text{total}} = N + M - 1$.
-2. **Transformação do Sinal:** Aplica a FFT no sinal expandido para obter sua representação harmônica: $X[k] = \text{FFT}\{x[n]\}$.
-3. **Transformação do Filtro:** Aplica a FFT na resposta ao impulso do filtro para obter a resposta em frequência do sistema: $H[k] = \text{FFT}\{h[n]\}$.
-4. **Filtragem na Frequência:** Multiplica os dois vetores resultantes ponto a ponto (multiplicação escalar simples):
+1. **Zero-Padding Geral:** Redimensiona o espectro físico do vinho $x[n]$ e a resposta ao impulso do filtro passa-baixas $h[n]$ preenchendo-os com zeros até o tamanho do suporte linear de convolução $N_{\text{total}} = N + M - 1$.
+2. **Transformação do Espectro (Salto ao Domínio Dual):** Aplica a FFT no sinal expandido para levá-lo ao pseudo-tempo: $X[k] = \text{FFT}\{x[n]\}$.
+3. **Transformação do Filtro:** Aplica a FFT na resposta ao impulso da janela móvel: $H[k] = \text{FFT}\{h[n]\}$.
+4. **Filtragem Rápida (Multiplicação Escalar):** Multiplica os dois vetores complexos resultantes ponto a ponto:
    $$Y[k] = X[k] \cdot H[k] \implies \begin{bmatrix} Y[0] \\ Y[1] \\ \vdots \\ Y[N_{\text{total}}-1] \end{bmatrix} = \begin{bmatrix} X[0] \cdot H[0] \\ X[1] \cdot H[1] \\ \vdots \\ X[N_{\text{total}}-1] \cdot H[N_{\text{total}}-1] \end{bmatrix}$$
-5. **Transformação Inversa:** Retorna o sinal filtrado para o domínio espacial discreto aplicando a Transformada de Fourier Discreta Inversa (IDFT):
+5. **Transformação Inversa (Retorno ao Espaço Espectral):** Retorna o sinal filtrado para o domínio físico original dos *wavenumbers* aplicando a Transformada Inversa (IFFT):
    $$y_{\text{filtrado}}[n] = \text{IFFT}\{Y[k]\}$$
 
-Esse método de processamento em frequência contorna a necessidade de construir imensas matrizes circulantes na memória do computador, otimizando a complexidade computacional de $\mathcal{O}(N^2)$ para $\mathcal{O}(N \log N)$ através da FFT, entregando um resultado rigorosamente idêntico ao cálculo realizado no espaço discreto e consolidando o fechamento teórico da disciplina de Análise de Sinais e Sistemas aplicada a dados reais de engenharia.
+Este método contorna a necessidade de construir e operar imensas matrizes circulantes na memória do computador. A abordagem matricial possui complexidade computacional de $\mathcal{O}(N^2)$, enquanto a execução via FFT reduz drasticamente esse custo para $\mathcal{O}(N \log N)$. O resultado final é rigorosamente idêntico ao cálculo de filtragem FIR no espaço discreto, porém executado com eficiência algorítmica máxima.
