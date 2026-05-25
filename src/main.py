@@ -44,17 +44,21 @@ def main():
 
     print("\n--- METRICAS EXTRAIDAS COM FILTRO SAVITZKY-GOLAY (Primeiras Linhas) ---")
     print(df_resultados_sg.head())
-    df_resultados_sg.to_csv('../results/savitzky_golay.csv', index=False)
+    df_resultados_sg.to_csv('../results/savitzky_golay_corrigido.csv', index=False)
 
     print("\n--- METRICAS EXTRAIDAS COM FILTRO DE MEDIA MOVEL (Primeiras Linhas) ---")
     print(df_resultados_ma.head())
-    df_resultados_ma.to_csv('../results/media_movel.csv', index=False)
+    df_resultados_ma.to_csv('../results/media_movel_corrigido.csv', index=False)
 
     # 5. Gerar e exibir os gráficos comparativos
     print("\n[Gráficos] A gerar visualizações comparativas de filtros...")
-    utils.compare_filters(df_mean, wine_column='Wine_01_Cab')
-    utils.compare_filters(df_mean, wine_column='Wine_15_Syr')
-    utils.compare_filters(df_mean, wine_column='Wine_30_Cab')
+    utils.compare_filters(df, df_mean, wine_column='Wine_01_Cab')
+    utils.compare_filters(df, df_mean, wine_column='Wine_15_Syr')
+    utils.compare_filters(df, df_mean, wine_column='Wine_30_Cab')
+
+    utils.highlight_triple_avg(df, df_mean, wine_column='Wine_01_Cab')
+    utils.highlight_triple_avg(df, df_mean, wine_column='Wine_15_Syr')
+    utils.highlight_triple_avg(df, df_mean, wine_column='Wine_30_Cab')
 
     print("Abrirndo a janela de gráficos. Fecha a janela para encerrar o programa.")
     plt.show() # IMPORTANTE: No VSCode, esta linha trava a execução e segura a janela do gráfico aberta.
