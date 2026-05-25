@@ -17,7 +17,7 @@ Para fins de processamento, é importante entender a natureza do sinal contido n
 * **Eixo X (Wavenumbers):** Representa a variável independente. É o domínio da frequência onde o sinal foi amostrado. A faixa de $899$ a $1802$ $cm^{-1}$ é conhecida como "Região da Impressão Digital", onde as vibrações moleculares são complexas e únicas para cada composto. Note que bandas dominantes de água e álcool foram deliberadamente excluídas para focar nos componentes diferenciadores.
 * **Eixo Y (Absorbância):** Representa a amplitude do sinal. Cada coluna de vinho (`Wine_XX...`) contém 235 pontos de amplitude (anotações de quanta energia foi absorvida em cada frequência).
 
-* A sigla FTIR significa Fourier Transform Infrared. O sensor óptico da máquina não lê os wavenumbers diretamente. Ele possui um espelho móvel e lê um sinal chamado Interferograma (que está no domínio da distância física/caminho óptico). A própria máquina aplica uma Transformada de Fourier nesse interferograma para revelar quais frequências espaciais (wavenumbers) estão ali. O arquivo CSV que você recebe já é um espectro no domínio da frequência espacial.
+* A sigla FTIR significa Fourier Transform Infrared. O sensor óptico da máquina não lê os wavenumbers diretamente. Ele possui um espelho móvel e lê um sinal chamado Interferograma (que está no domínio da distância física/caminho óptico). A própria máquina aplica uma Transformada de Fourier nesse interferograma para revelar quais frequências espaciais (wavenumbers) estão ali. O arquivo CSV gerado já é um espectro no domínio da frequência espacial.
 
 ## 4. Base de Dados
 O conjunto de dados contém:
