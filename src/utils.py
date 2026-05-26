@@ -23,6 +23,24 @@ def load_data(file_path):
 
     return df
 
+def load_results(csv_path, index_tags):
+    """Opens a CSV file with spectral wavenumbers data using Pandas and 
+    makes sure the index is selected as the Wavenumbers column
+    Returns a DataFrame.
+    
+    Args:
+        file_path : string with the .csv file
+        df : Pandas DataFrama object with the data on the csv file"""
+    
+
+    df = pd.read_csv(csv_path, index_tags)
+    # df_sg = pd.read_csv('../results/savitzky_golay_corrigido.csv')
+    
+    df.index = index_tags
+    df['Uva'] = ['Cabernet' if 'Cab' in nome else 'Shiraz' for nome in df.index]
+
+    return df
+
 def calc_mean(df):
     """
     Aplica o Princípio da Superposição em Sistemas Lineares.
@@ -356,5 +374,98 @@ def plot_pass_band_all():
     plt.legend(loc='lower right', fontsize=7)
     plt.grid(alpha=0.2)
 
+    plt.tight_layout()
+    plt.show()
+
+def statistics(column_list, df, group_by='Uva'):
+    df_medias = df.groupby(group_by)[column_list].mean()
+
+    return df_medias
+
+def plot_bar_charts(df_medias):
+
+    # ==============================================================================
+    # VISUALIZAÇÃO DE SINAIS E SISTEMAS (GRÁFICOS)
+    # ==============================================================================
+
+    # Cores padronizadas para as classes
+    cor_cab = '#800020' # Vinho Bordeaux (Cabernet)
+    cor_syr = '#4B0082' # Índigo Escuro (Shiraz)
+
+    # ---------------------------------------------------------
+    # Gráfico 1: Barras Comparativas (Energia Média)
+    # ---------------------------------------------------------
+    ax = df_medias.T.plot(kind='bar', figsize=(10, 6), color=[cor_cab, cor_syr], edgecolor='black')
+    plt.title('Assinatura Espectral Média: Cabernet vs Shiraz (SG)', fontsize=14, fontweight='bold')
+    plt.ylabel('Energia Integrada da Banda (Absorbância $\\times$ cm$^{-1}$)', fontsize=12)
+    plt.xlabel('Macronutrientes e Aromas', fontsize=12)
+    plt.xticks(ticks=range(5), labels=['Açúcares', 'Ácidos Orgânicos', 'Polifenóis', 'Proteínas', 'Aromas (Ésteres)'], rotation=15)
+    plt.legend(title='Classe da Uva', fontsize=10)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
+def scatter_plot(df):
+
+    cor_cab = '#800020' # Vinho Bordeaux (Cabernet)
+    cor_syr = '#4B0082' # Índigo Escuro (Shiraz)
+    # ---------------------------------------------------------
+    # Gráfico 2: Espaço de Características (Scatter Plot)
+    # Prova visual da separabilidade linear das classes
+    # ---------------------------------------------------------
+    plt.figure(figsize=(9, 6))
+
+    cabernets = df[df['Uva'] == 'Cabernet']
+    shiraz = df[df['Uva'] == 'Shiraz']
+
+    plt.scatter(cabernets['area_polifenois'], cabernets['area_aroma'], 
+                color=cor_cab, label='Cabernet', s=100, alpha=0.7, edgecolors='white', linewidth=1.5)
+
+    plt.scatter(shiraz['area_polifenois'], shiraz['area_aroma'], 
+                color=cor_syr, label='Shiraz', s=100, alpha=0.7, edgecolors='white', linewidth=1.5)
+
+    plt.title('Espaço de Separação: Polifenóis vs Aromas', fontsize=14, fontweight='bold')
+    plt.xlabel('Energia da Banda de Polifenóis (Taninos)', fontsize=12)
+    plt.ylabel('Energia da Banda de Ésteres (Aromas)', fontsize=12)
+    plt.legend(loc='best', fontsize=11)
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+
+def plot_radar_chart(df_medias):
+
+    cor_cab = '#800020' # Vinho Bordeaux (Cabernet)
+    cor_syr = '#4B0082' # Índigo Escuro (Shiraz)
+
+    # ---------------------------------------------------------
+    # Gráfico 3: Gráfico de Radar (Perfil Químico Multidimensional)
+    # ---------------------------------------------------------
+    # Prepara os dados para o radar (precisa fechar o polígono repetindo o primeiro ponto)
+    labels = ['Açúcares', 'Ácidos', 'Polifenóis', 'Proteínas', 'Aromas']
+    num_vars = len(labels)
+    angulos = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    angulos += angulos[:1]  # Fecha o círculo
+
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+
+    # Plota Cabernet
+    valores_cab = df_medias.loc['Cabernet'].tolist()
+    valores_cab += valores_cab[:1] # Fecha o polígono
+    ax.plot(angulos, valores_cab, color=cor_cab, linewidth=2, label='Cabernet')
+    ax.fill(angulos, valores_cab, color=cor_cab, alpha=0.25)
+
+    # Plota Shiraz
+    valores_syr = df_medias.loc['Shiraz'].tolist()
+    valores_syr += valores_syr[:1] # Fecha o polígono
+    ax.plot(angulos, valores_syr, color=cor_syr, linewidth=2, label='Shiraz')
+    ax.fill(angulos, valores_syr, color=cor_syr, alpha=0.25)
+
+    # Ajusta a estética do Radar
+    ax.set_theta_offset(np.pi / 2) # Gira para o topo
+    ax.set_theta_direction(-1) # Sentido horário
+    ax.set_thetagrids(np.degrees(angulos[:-1]), labels, fontsize=11, fontweight='bold')
+
+    plt.title('Identidade Espectral Multidimensional', y=1.08, fontsize=15, fontweight='bold')
+    plt.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
     plt.tight_layout()
     plt.show()
