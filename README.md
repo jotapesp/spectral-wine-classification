@@ -1,60 +1,231 @@
-# Projeto: Processamento de Sinais em Espectros de Infravermelho (FTIR) de Vinhos
+# Processamento de Sinais em Espectros FTIR de Vinhos
 
-## 1. Introdução e Objetivo
-Este projeto aplica conceitos da disciplina de **Análise de Sinais e Sistemas** para processar e interpretar dados reais de espectroscopia de infravermelho (FTIR) de vinhos tintos (Cabernet Sauvignon e Shiraz). 
+Projeto da disciplina de **Análise de Sinais e Sistemas** para processar e interpretar espectros de infravermelho por Transformada de Fourier (**FTIR**) de vinhos tintos Cabernet Sauvignon e Shiraz.
 
-O objetivo principal é utilizar técnicas de processamento digital de sinais (DSP) para limpar o ruído dos sensores, identificar picos de absorbância automaticamente e correlacionar esses picos com macronutrientes (proteínas e carboidratos) e compostos aromáticos (ésteres).
+O objetivo é tratar cada espectro como um **sinal discreto**, reduzir ruído experimental, aplicar filtros digitais, isolar bandas químicas e extrair métricas comparáveis entre amostras.
 
-## 2. A Conexão com Sinais e Sistemas
-Embora os dados venham da química de alimentos, a análise será fundamentada em ferramentas de engenharia:
-* **Domínio da Frequência:** O eixo horizontal (Número de Onda em $cm^{-1}$) é tratado como uma frequência espacial.
-* **Filtragem Digital:** Aplicação de filtros pass-baixa e suavização (Savitzky-Golay) para melhoria da Relação Sinal-Ruído (SNR).
-* **Detecção de Transientes/Picos:** Uso de derivadas e algoritmos de busca de máximos locais para identificação de componentes químicos.
-* **Análise de Amplitude:** Comparação da energia do sinal em frequências específicas para diferenciação de padrões.
+---
 
-## 3. Entendendo os Dados (Amostragem e Espectro)
-Para fins de processamento, é importante entender a natureza do sinal contido no arquivo `Wine_FTIR_Triplicate_Spectra.csv`:
-* **Eixo X (Wavenumbers):** Representa a variável independente. É o domínio da frequência onde o sinal foi amostrado. A faixa de $899$ a $1802$ $cm^{-1}$ é conhecida como "Região da Impressão Digital", onde as vibrações moleculares são complexas e únicas para cada composto. Note que bandas dominantes de água e álcool foram deliberadamente excluídas para focar nos componentes diferenciadores.
-* **Eixo Y (Absorbância):** Representa a amplitude do sinal. Cada coluna de vinho (`Wine_XX...`) contém 235 pontos de amplitude (anotações de quanta energia foi absorvida em cada frequência).
+## Ideia Central
 
-* A sigla FTIR significa Fourier Transform Infrared. O sensor óptico da máquina não lê os wavenumbers diretamente. Ele possui um espelho móvel e lê um sinal chamado Interferograma (que está no domínio da distância física/caminho óptico). A própria máquina aplica uma Transformada de Fourier nesse interferograma para revelar quais frequências espaciais (wavenumbers) estão ali. O arquivo CSV gerado já é um espectro no domínio da frequência espacial.
+O arquivo de entrada já contém espectros FTIR no domínio do número de onda. Assim, o eixo horizontal não é tempo, mas pode ser modelado como um índice discreto:
 
-## 4. Base de Dados
-O conjunto de dados contém:
-* **Amostras:** 37 garrafas de vinho analisadas em triplicata (111 espectros no total).
-* **Variedades:** Cabernet Sauvignon e Shiraz.
-* **Resolução:** 235 pontos de amostragem por espectro.
+$$
+x[n] = \text{absorbância no número de onda associado ao índice } n
+$$
 
-## 5. Metodologia Proposta (Etapas do Trabalho)
+Cada sinal medido é interpretado como:
 
-### Passo 1: Pré-processamento (Média e Suavização)
-1. **Média de Conjunto:** Redução de ruído aleatório através da média aritmética das triplicatas de cada amostra.
-2. **Suavização:** Aplicação do **Filtro de Savitzky-Golay** no sinal médio para remover ruídos de alta frequência remanescentes sem perder a resolução dos picos.
+$$
+x[n] = v[n] + e[n]
+$$
 
-### Passo 2: Identificação Automática de Componentes (Peak Picking)
-Desenvolvimento de algoritmo para localizar picos significativos correlacionados à literatura:
-* **Açúcares/Carboidratos:** Faixa de 900 - 1150 $cm^{-1}$.
-* **Ácidos Orgânicos:** Próximo a 1200 $cm^{-1}$.
-* **Polifenóis (Taninos/Cor):** Região entre 1400 - 1600 $cm^{-1}$.
-* **Proteínas (Amidas):** Região próxima a 1650 $cm^{-1}$.
-* **Ésteres (Aromas):** Faixa de 1730 - 1750 $cm^{-1}$ (Estiramento $C=O$).
+onde `v[n]` representa a informação química do vinho e `e[n]` representa ruído experimental.
 
-### Passo 3: Comparação de Assinaturas Espectrais
-Análise comparativa entre as variedades (Cabernet vs. Shiraz) utilizando a amplitude de frequências específicas e análise de variância do sinal.
+O pipeline implementado é:
 
-### Passo 4: Ranking de Intensidade Aromática
-Cálculo da área sob a curva (integração do sinal) na região dos ésteres para classificar amostras com maior potencial de intensidade de aroma.
+**dados brutos → média das triplicatas → filtros de suavização → passa-bandas químicos → pico/área → comparação entre vinhos**
 
-## 6. Requisitos de Software
-* **Linguagem:** Python 3.x
-* **Bibliotecas Principais:**
-    * `pandas`: Manipulação de dados e indexação por frequência.
-    * `scipy.signal`: Filtros digitais e detecção de picos.
-    * `matplotlib`: Visualização de sinais.
-    * `numpy`: Cálculos matemáticos de matrizes.
+---
+
+## Dados
+
+O conjunto principal está em:
+
+- `data/Wine_FTIR_Triplicate_Spectra.csv`
+
+Características:
+
+- 37 vinhos únicos;
+- 3 medições por vinho, totalizando 111 espectros;
+- 235 pontos por espectro;
+- faixa aproximada de 899 a 1803 cm^-1;
+- variedades Cabernet Sauvignon e Shiraz.
+
+A região analisada corresponde à chamada região de impressão digital do infravermelho, na qual bandas de absorção ajudam a diferenciar grupos químicos.
+
+---
+
+## Metodologia
+
+### 1. Carregamento e modelagem
+
+A função `load_data()` lê o CSV e usa `Wavenumbers` como índice do `DataFrame`.
+
+O espectro passa a ser tratado como sequência discreta de absorbâncias.
+
+### 2. Média das triplicatas
+
+A função `calc_mean()` agrupa as três réplicas de cada vinho e calcula:
+
+$$
+y_{\text{mean}}[n] = \frac{x_1[n] + x_2[n] + x_3[n]}{3}
+$$
+
+Essa etapa aplica linearidade/superposição para reduzir ruído aleatório entre medições.
+
+### 3. Filtros de suavização
+
+Foram comparadas duas estratégias:
+
+- `dsp_filter()`: filtro **Savitzky-Golay**, com janela 11 e polinômio de ordem 2;
+- `dsp_filter_moving_average()`: filtro de **média móvel FIR**, implementado por convolução discreta.
+
+A média móvel é simples e reduz ruído, mas pode achatar picos. O Savitzky-Golay preserva melhor a forma, altura e largura dos picos espectrais, por isso é usado como referência principal nos gráficos finais.
+
+### 4. Passa-bandas químicos
+
+A função `extract_wine_metrics()` isola regiões por máscaras no eixo de número de onda. Essas máscaras equivalem a filtros passa-banda ideais aplicados sobre o espectro suavizado.
+
+Faixas usadas:
+
+| Composto | Faixa aproximada |
+|---|---:|
+| Açúcares / carboidratos | 900 a 1150 cm^-1 |
+| Ácidos orgânicos | 1160 a 1240 cm^-1 |
+| Polifenóis / taninos | 1400 a 1600 cm^-1 |
+| Proteínas / amidas | 1600 a 1700 cm^-1 |
+| Ésteres / aromas | 1730 a 1750 cm^-1 |
+
+### 5. Métricas extraídas
+
+Para cada banda são calculadas:
+
+- **pico mais proeminente**, via `get_main_peak()` e `scipy.signal.find_peaks`;
+- **área integrada da banda**, via `np.trapezoid()`.
+
+A área funciona como uma integração discreta no eixo espectral e pode ser interpretada como energia/concentração relativa da banda.
+
+---
+
+## Estrutura do Projeto
+
+```text
+.
+├── data/                  # Dados FTIR e janelas/faixas químicas
+├── images/                # Fluxogramas usados na apresentação
+├── notebooks/             # Notebook exploratório
+├── results/               # CSVs e gráficos gerados
+├── src/
+│   ├── main.py            # Pipeline principal
+│   ├── utils.py           # Funções de leitura, filtros, métricas e gráficos
+│   ├── raw_charts.py      # Gráficos de pontos das réplicas brutas
+│   ├── sqsignals.py       # Visualização de passa-bandas
+│   └── concentration.py   # Apoio para gráficos de concentração/assinatura
+├── DESCRICAO_GRAFICOS.md  # Explicação dos gráficos gerados
+├── DISCUSSION.md          # Discussão conceitual inicial
+├── RELATORIO_BASE.md      # Base teórica detalhada
+└── SUGESTAO_APRESENTACAO.md
+```
+
+---
+
+## Como Executar
+
+Crie um ambiente virtual e instale as dependências:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Execute o pipeline principal a partir da pasta `src`, pois alguns scripts usam caminhos relativos para `../data` e `../results`:
+
+```bash
+cd src
+python main.py
+```
+
+Scripts úteis:
+
+```bash
+cd src
+python raw_charts.py      # Mostra gráficos de pontos das réplicas brutas
+python sqsignals.py       # Mostra os passa-bandas sobre os espectros
+```
+
+Observação: os scripts usam `matplotlib.pyplot.show()`, então a execução pode abrir janelas de gráficos e aguardar que elas sejam fechadas.
+
+Os gráficos de concentração e assinatura espectral em `results/` são gerados a partir das funções `statistics()`, `plot_bar_charts()`, `scatter_plot()` e `plot_radar_chart()` em `src/utils.py`.
+
+---
+
+## Reproduzindo pelo Notebook
+
+O notebook principal para replicação completa é:
+
+- `notebooks/analise.ipynb`
+
+Ele foi organizado em blocos separados para:
+
+1. configurar caminhos e importar funções;
+2. carregar o CSV bruto;
+3. gerar gráficos dos dados iniciais como pontos;
+4. calcular a média das triplicatas;
+5. comparar Savitzky-Golay e média móvel;
+6. extrair métricas por bandas químicas;
+7. gerar passa-bandas, barras, dispersão e radar;
+8. salvar os CSVs e PNGs na pasta `results/`.
+
+Para executar:
+
+```bash
+source .venv/bin/activate
+jupyter lab notebooks/analise.ipynb
+```
+
+ou:
+
+```bash
+source .venv/bin/activate
+jupyter notebook notebooks/analise.ipynb
+```
+
+Depois, use **Run All Cells**. O notebook detecta automaticamente se foi aberto pela raiz do projeto ou pela pasta `notebooks/`, então os caminhos para `data/`, `src/` e `results/` são configurados dentro da primeira célula de código.
+
+Ao final da execução, os principais gráficos e tabelas são atualizados em `results/`.
+
+---
+
+## Principais Saídas
+
+Arquivos CSV:
+
+- `results/savitzky_golay_corrigido.csv`
+- `results/media_movel_corrigido.csv`
+
+Gráficos principais:
+
+- `results/dados_iniciais_wine_01_rep1.png`: dados brutos como pontos discretos;
+- `results/wine_01_media_triplicata.png`: comparação das triplicatas e média;
+- `results/wine_01.png`: comparação entre sinal bruto, média móvel e Savitzky-Golay;
+- `results/passa_bandas_degraus_unitarios.png`: regiões químicas isoladas por passa-bandas;
+- `results/concentracao_compostos_sg.png`: assinatura média Cabernet vs Shiraz;
+- `results/espaco_separacao_sg.png`: dispersão polifenóis vs aromas;
+- `results/identidade_espectral.png`: radar da identidade espectral média.
+
+Resumo dos resultados:
+
+- os filtros Savitzky-Golay e média móvel geraram áreas médias muito próximas;
+- o Savitzky-Golay preservou melhor a forma dos picos;
+- Cabernet e Shiraz ficaram próximos nas métricas médias das bandas escolhidas;
+- as métricas extraídas são úteis como assinatura espectral, mas não separam perfeitamente as variedades sozinhas.
+
+---
+
+## Materiais de Apoio
+
+- `SUGESTAO_APRESENTACAO.md`: roteiro sugerido para apresentação de 15 minutos;
+- `DESCRICAO_GRAFICOS.md`: finalidade e interpretação de cada gráfico;
+- `RELATORIO_BASE.md`: fundamentação teórica mais completa;
+- `DISCUSSION.md`: discussão conceitual e conexão com Sinais e Sistemas.
+
+---
 
 ## Fonte dos Dados
-Os dados utilizados neste projeto foram obtidos do repositório [Wine_Cabernet_Shiraz_FTIR](https://github.com/QIBChemometrics/Wine_Cabernet_Shiraz_FTIR) do Quadram Institute Bioscience sob licença CC0 1.0 Universal.
 
-**Referência Acadêmica:**
-Kemsley EK, Defernez M, Marini, F (2019) *"Multivariate statistics: Considerations and confidences in food authenticity problems"*, Food Control, 105, 102-112.
+Os dados utilizados foram obtidos do repositório [Wine_Cabernet_Shiraz_FTIR](https://github.com/QIBChemometrics/Wine_Cabernet_Shiraz_FTIR), do Quadram Institute Bioscience, sob licença CC0 1.0 Universal.
+
+**Referência acadêmica:**  
+Kemsley EK, Defernez M, Marini F. (2019). *Multivariate statistics: Considerations and confidences in food authenticity problems*. Food Control, 105, 102-112.
