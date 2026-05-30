@@ -75,10 +75,10 @@ $$
 
 **Grafico para mostrar:**
 
-![Comparacao de filtros para um espectro FTIR real](results/wine_01.png)
+![Dados Brutos Iniciais do FTIR para o Vinho 1 rep 1](results/dados_iniciais_wine_01_rep1.png)
 
 **Como explicar o grafico:**  
-Use a curva bruta para mostrar o formato geral do espectro. O eixo x e o numero de onda em cm^-1, e o eixo y e a absorbancia. Os picos e vales indicam regioes onde compostos do vinho absorvem mais ou menos energia.
+Use os pontos brutos para mostrar como o dado chega inicialmente: uma sequencia discreta de amostras de absorbancia. O eixo x e o numero de onda em cm^-1, e o eixo y e a absorbancia. Os picos e vales indicam regioes onde compostos do vinho absorvem mais ou menos energia.
 
 ---
 
@@ -570,14 +570,15 @@ Uma frase boa para encerrar:
 
 # Ordem Recomendada dos Graficos na Apresentacao
 
-1. `results/wine_01.png` - introduzir o espectro e depois reutilizar na comparacao de filtros.
+1. `results/dados_iniciais_wine_01_rep1.png` - introduzir o dado bruto como sequencia discreta de pontos.
 2. `results/wine_01_media_triplicata.png` - mostrar a media das triplicatas.
 3. `results/wine_01_media_triplicatas_ZOOM_IN_1.png` - evidenciar a reducao de variabilidade.
-4. `results/passa_bandas_degraus_unitarios.png` - mostrar as janelas passa-banda.
-5. `results/compara_passa_bandas_wine01_wine15.png` - comparar regioes entre dois vinhos.
-6. `results/concentracao_compostos_sg.png` - mostrar as areas medias por classe.
-7. `results/espaco_separacao_sg.png` - discutir separabilidade.
-8. `results/identidade_espectral.png` - fechar com assinatura multidimensional.
+4. `results/wine_01.png` - comparar sinal bruto, media movel e Savitzky-Golay.
+5. `results/passa_bandas_degraus_unitarios.png` - mostrar as janelas passa-banda.
+6. `results/compara_passa_bandas_wine01_wine15.png` - comparar regioes entre dois vinhos.
+7. `results/concentracao_compostos_sg.png` - mostrar as areas medias por classe.
+8. `results/espaco_separacao_sg.png` - discutir separabilidade.
+9. `results/identidade_espectral.png` - fechar com assinatura multidimensional.
 
 **Graficos de backup:**
 
@@ -626,4 +627,3 @@ Uma frase boa para encerrar:
 - `np.trapezoid` implementa a integracao numerica.
 - Cabernet e Shiraz ficaram muito proximos nas metricas medias.
 - O pipeline e valido, mas a separacao de classes exigiria mais atributos/metodos.
-

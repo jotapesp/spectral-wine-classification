@@ -56,6 +56,59 @@ def calc_mean(df):
     df_mean = df.groupby(wine_tags, axis=1).mean()
     return df_mean
 
+def plot_raw_triplicate_scatter(df_triplicata, wine_column=None, title=None, show=True):
+    """
+    Gera um grafico de pontos para uma unica replicata de um vinho.
+
+    A entrada pode ser:
+    - uma Series com indice Wavenumbers;
+    - um DataFrame com uma unica coluna espectral;
+    - um DataFrame contendo a coluna Wavenumbers e uma unica coluna espectral.
+    """
+
+    if isinstance(df_triplicata, pd.Series):
+        serie = df_triplicata
+    else:
+        df_plot = df_triplicata.copy()
+
+        if 'Wavenumbers' in df_plot.columns:
+            df_plot = df_plot.set_index('Wavenumbers')
+
+        if wine_column is not None:
+            serie = df_plot[wine_column]
+        else:
+            if len(df_plot.columns) != 1:
+                raise ValueError(
+                    "Informe wine_column ou passe um DataFrame com uma unica coluna espectral."
+                )
+            serie = df_plot.iloc[:, 0]
+
+    label = serie.name if serie.name is not None else 'Triplicata'
+    plot_title = title or f'Dados Brutos Iniciais - {label}'
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.scatter(
+        serie.index,
+        serie.values,
+        label=label,
+        color='tab:blue',
+        s=28,
+        alpha=0.8,
+        edgecolors='none'
+    )
+
+    ax.set_title(plot_title, fontsize=14)
+    ax.set_xlabel('Wavenumbers ($cm^{-1}$)', fontsize=12)
+    ax.set_ylabel('Absorbância', fontsize=12)
+    ax.grid(True, linestyle=':', alpha=0.7)
+    ax.legend()
+    fig.tight_layout()
+
+    if show:
+        plt.show()
+
+    return fig, ax
+
 def dsp_filter(serie_sinal, janela=11, ordem=2):
     """Aplica o filtro Savitzky-Golay (Filtro FIR avançado).
     Preserva a altura e a forma dos picos espectrais."""
