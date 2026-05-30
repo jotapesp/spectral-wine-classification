@@ -11,17 +11,17 @@
 
 | Parte | Tempo | Foco | Slides |
 |---|---:|---|---:|
-| Parte 1 | 5 min | Introducao teorica, FTIR, modelagem do sinal e media das triplicatas | 1 a 5 |
-| Parte 2 | 5 min | Filtros de suavizacao e filtros passa-banda | 6 a 10 |
-| Parte 3 | 5 min | Sistema acumulador discreto, metricas e resultados | 11 a 15 |
+| Parte 1 | 5 min | Introducao teorica, FTIR, pipeline geral, modelagem e media das triplicatas | 1 a 6 |
+| Parte 2 | 5 min | Filtros de suavizacao e filtros passa-banda | 7 a 11 |
+| Parte 3 | 5 min | Sistema acumulador discreto, metricas e resultados | 12 a 16 |
 
 **Mensagem final da apresentacao:** o projeto usa uma cascata de sistemas discretos para reduzir ruido, preservar picos espectrais, isolar bandas quimicas e extrair areas/picos que servem como assinatura espectral dos vinhos.
 
 ---
 
-# Parte 1 - Introducao, FTIR, Modelagem e Media das Triplicatas (~5 min)
+# Parte 1 - Introducao, FTIR, Pipeline, Modelagem e Media das Triplicatas (~5 min)
 
-## Slide 1 - Tema, Problema e Objetivo (~45 s)
+## Slide 1 - Tema, Problema e Objetivo (~35 a 40 s)
 
 **Titulo sugerido:**  
 **Processamento Digital de Sinais em Espectros FTIR de Vinhos**
@@ -50,7 +50,7 @@ Em `src/main.py`, o pipeline comeca carregando o CSV com `utils.load_data(utils.
 
 ---
 
-## Slide 2 - O que e FTIR e por que isso vira um sinal? (~1 min)
+## Slide 2 - O que e FTIR e por que isso vira um sinal? (~50 a 55 s)
 
 **Titulo sugerido:**  
 **FTIR: uma assinatura espectral do vinho**
@@ -82,7 +82,7 @@ Use os pontos brutos para mostrar como o dado chega inicialmente: uma sequencia 
 
 ---
 
-## Slide 2.5 - Pipeline Geral (Sugestão de slide - não obrigatório) (~20 a 30 s)
+## Slide 3 - Pipeline Geral do Projeto (~20 a 30 s)
 
 **Titulo sugerido:**  
 **Pipeline geral do trabalho**
@@ -98,11 +98,11 @@ Antes de detalhar cada etapa, esse fluxograma resume o caminho geral do trabalho
 Agora vamos começar a detalhar esse fluxo pela modelagem do sinal e pelo primeiro pré-processamento: a média das triplicatas.
 
 **Mensagem principal:**  
-Esse slide serve apenas como mapa da apresentação. Não é necessário explicar todos os blocos agora; cada parte será retomada nos próximos slides.
+Esse slide serve como mapa da apresentação. Não é necessário explicar todos os blocos agora; cada parte será retomada nos próximos slides.
 
 ---
 
-## Slide 3 - Modelagem do Sinal e do Sistema (~1 min)
+## Slide 4 - Modelagem do Sinal e do Sistema (~50 s)
 
 **Titulo sugerido:**  
 **Modelo discreto: sinal real + ruido**
@@ -148,7 +148,7 @@ Ou seja, o processamento segue exatamente a ordem teorica: entrada, reducao de r
 
 ---
 
-## Slide 4 - Primeiro Filtro: Media das Triplicatas (~1 min 10 s)
+## Slide 5 - Primeiro Filtro: Media das Triplicatas (~1 min 5 s)
 
 **Titulo sugerido:**  
 **Media das triplicatas como sistema linear**
@@ -194,7 +194,7 @@ df_mean = df.groupby(wine_tags, axis=1).mean()
 
 ---
 
-## Slide 5 - Evidencia Visual da Reducao de Ruido (~1 min)
+## Slide 6 - Evidencia Visual da Reducao de Ruido (~45 a 50 s)
 
 **Titulo sugerido:**  
 **Zoom: por que a media importa?**
@@ -220,7 +220,7 @@ Ate aqui, transformamos o problema quimico em um problema de sinais: um vetor di
 
 # Parte 2 - Filtros de Suavizacao e Filtros Passa-Banda (~5 min)
 
-## Slide 6 - Por que filtrar depois da media? (~40 s)
+## Slide 7 - Por que filtrar depois da media? (~40 s)
 
 **Titulo sugerido:**  
 **Ruido intra-amostral e suavizacao**
@@ -239,7 +239,7 @@ Essa etapa aparece em duas funcoes:
 
 ---
 
-## Slide 7 - Filtro de Media Movel FIR (~1 min)
+## Slide 8 - Filtro de Media Movel FIR (~1 min)
 
 **Titulo sugerido:**  
 **Media movel: convolucao com uma janela retangular**
@@ -284,7 +284,7 @@ No codigo principal, essa funcao e usada para comparar a estrategia propria de c
 
 ---
 
-## Slide 8 - Filtro Savitzky-Golay (~1 min)
+## Slide 9 - Filtro Savitzky-Golay (~1 min)
 
 **Titulo sugerido:**  
 **Savitzky-Golay: suavizar preservando picos**
@@ -323,7 +323,7 @@ Depois o resultado e devolvido como `pandas.Series`, preservando o eixo dos nume
 
 ---
 
-## Slide 9 - Comparacao Experimental dos Filtros (~1 min 20 s)
+## Slide 10 - Comparacao Experimental dos Filtros (~1 min 20 s)
 
 **Titulo sugerido:**  
 **Original x Media Movel x Savitzky-Golay**
@@ -358,7 +358,7 @@ As metricas foram estaveis entre os filtros, mas o Savitzky-Golay e mais adequad
 
 ---
 
-## Slide 10 - Filtros Passa-Banda por Degraus Unitarios (~1 min)
+## Slide 11 - Filtros Passa-Banda por Degraus Unitarios (~1 min)
 
 **Titulo sugerido:**  
 **Isolando regioes quimicas do espectro**
@@ -410,7 +410,7 @@ Essa mascara e a versao computacional do passa-banda ideal.
 
 # Parte 3 - Acumulador Discreto, Metricas e Resultados (~5 min)
 
-## Slide 11 - Comparacao entre Bandas de Vinhos (~50 s)
+## Slide 12 - Comparacao entre Bandas de Vinhos (~50 s)
 
 **Titulo sugerido:**  
 **O que muda entre dois vinhos?**
@@ -428,7 +428,7 @@ A funcao `plot_pass_band_all` em `utils.py` carrega as janelas de acucares, acid
 
 ---
 
-## Slide 12 - Pico e Proeminencia Espectral (~50 s)
+## Slide 13 - Pico e Proeminencia Espectral (~50 s)
 
 **Titulo sugerido:**  
 **Primeira metrica: intensidade de pico**
@@ -464,7 +464,7 @@ Se nenhum pico local for encontrado, o codigo usa `segmento.max()` como fallback
 
 ---
 
-## Slide 13 - Sistema Acumulador Discreto e Area da Banda (~1 min 10 s)
+## Slide 14 - Sistema Acumulador Discreto e Area da Banda (~1 min 10 s)
 
 **Titulo sugerido:**  
 **Segunda metrica: area como energia/concentracao relativa**
@@ -508,7 +508,7 @@ O mesmo padrao e repetido para acucares, acidos, polifenois e proteinas.
 
 ---
 
-## Slide 14 - Resultados: Assinatura Espectral Media (~1 min 15 s)
+## Slide 15 - Resultados: Assinatura Espectral Media (~1 min 15 s)
 
 **Titulo sugerido:**  
 **Cabernet e Shiraz: assinatura media das bandas**
@@ -548,7 +548,7 @@ As duas classes apresentam assinaturas medias muito semelhantes nas bandas escol
 
 ---
 
-## Slide 15 - Separacao, Radar e Conclusao (~1 min)
+## Slide 16 - Separacao, Radar e Conclusao (~1 min)
 
 **Titulo sugerido:**  
 **As metricas separam as classes?**
@@ -591,14 +591,15 @@ Uma frase boa para encerrar:
 # Ordem Recomendada dos Graficos na Apresentacao
 
 1. `results/dados_iniciais_wine_01_rep1.png` - introduzir o dado bruto como sequencia discreta de pontos.
-2. `results/wine_01_media_triplicata.png` - mostrar a media das triplicatas.
-3. `results/wine_01_media_triplicatas_ZOOM_IN_1.png` - evidenciar a reducao de variabilidade.
-4. `results/wine_01.png` - comparar sinal bruto, media movel e Savitzky-Golay.
-5. `results/passa_bandas_degraus_unitarios.png` - mostrar as janelas passa-banda.
-6. `results/compara_passa_bandas_wine01_wine15.png` - comparar regioes entre dois vinhos.
-7. `results/concentracao_compostos_sg.png` - mostrar as areas medias por classe.
-8. `results/espaco_separacao_sg.png` - discutir separabilidade.
-9. `results/identidade_espectral.png` - fechar com assinatura multidimensional.
+2. `images/fluxograma_conciso1.png` - apresentar o mapa geral obrigatório do pipeline.
+3. `results/wine_01_media_triplicata.png` - mostrar a media das triplicatas.
+4. `results/wine_01_media_triplicatas_ZOOM_IN_1.png` - evidenciar a reducao de variabilidade.
+5. `results/wine_01.png` - comparar sinal bruto, media movel e Savitzky-Golay.
+6. `results/passa_bandas_degraus_unitarios.png` - mostrar as janelas passa-banda.
+7. `results/compara_passa_bandas_wine01_wine15.png` - comparar regioes entre dois vinhos.
+8. `results/concentracao_compostos_sg.png` - mostrar as areas medias por classe.
+9. `results/espaco_separacao_sg.png` - discutir separabilidade.
+10. `results/identidade_espectral.png` - fechar com assinatura multidimensional.
 
 **Graficos de backup:**
 
@@ -614,11 +615,12 @@ Uma frase boa para encerrar:
 
 ## Integrante 1 - Parte 1
 
-**Responsavel por:** problema, FTIR, modelagem do sinal, dataset e media das triplicatas.
+**Responsavel por:** problema, FTIR, mapa geral do pipeline, modelagem do sinal, dataset e media das triplicatas.
 
 **Pontos que nao podem faltar:**
 
 - FTIR mede absorbancia em funcao do numero de onda.
+- O fluxograma e apenas um mapa rapido; os filtros e resultados serao detalhados pelos proximos integrantes.
 - O espectro vira um sinal discreto $x[n]$.
 - O modelo usado e $x[n] = v[n] + e[n]$.
 - A media das triplicatas reduz ruido aleatorio por superposicao.
