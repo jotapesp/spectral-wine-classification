@@ -82,6 +82,26 @@ Use os pontos brutos para mostrar como o dado chega inicialmente: uma sequencia 
 
 ---
 
+## Slide 2.5 - Pipeline Geral (Sugestão de slide - não obrigatório) (~20 a 30 s)
+
+**Titulo sugerido:**  
+**Pipeline geral do trabalho**
+
+**Grafico para mostrar:**
+
+![Fluxograma conciso do pipeline](images/fluxograma_conciso1.png)
+
+**Fala sugerida:**
+
+Antes de detalhar cada etapa, esse fluxograma resume o caminho geral do trabalho. Começamos com os dados FTIR brutos, modelamos cada espectro como um sinal discreto, calculamos a média das triplicatas, comparamos dois filtros de suavização, segmentamos as regiões químicas e extraímos métricas para comparar os vinhos.
+
+Agora vamos começar a detalhar esse fluxo pela modelagem do sinal e pelo primeiro pré-processamento: a média das triplicatas.
+
+**Mensagem principal:**  
+Esse slide serve apenas como mapa da apresentação. Não é necessário explicar todos os blocos agora; cada parte será retomada nos próximos slides.
+
+---
+
 ## Slide 3 - Modelagem do Sinal e do Sistema (~1 min)
 
 **Titulo sugerido:**  
